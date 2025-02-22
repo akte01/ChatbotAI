@@ -1,0 +1,46 @@
+.btn-like {
+  display: inline;
+}
+
+.p-5 {
+  padding: 1em;
+}
+
+.m-5 {
+  margin: 1em;
+}
+
+.text-right {
+  align-items: flex-end;
+}
+
+.chat-window {
+  background-color: rgb(213, 218, 228);
+  width: auto;
+}
+
+.user-message {
+  background-color: rgb(206, 247, 247);
+}
+
+.chat-message {
+  background-color: azure
+}
+
+.flex {
+  display: flex;
+  flex-direction: column;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.messages-area {
+  height: 75vh;
+  overflow-y: auto;
+}
+
+mat-card {
+  width: fit-content;
+}
