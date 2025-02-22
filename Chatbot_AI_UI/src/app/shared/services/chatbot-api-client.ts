@@ -101,7 +101,7 @@ export class ChatbotAIApiClient {
      * @param body (optional)
      * @return OK
      */
-    generateResponse(body: UserMessageDto | undefined): Observable<Message> {
+    generateResponse(body: GenerateResponseCommand | undefined): Observable<Message> {
         let url_ = this.baseUrl + "/ChatbotAI/GenerateResponse";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -164,7 +164,7 @@ export class ChatbotAIApiClient {
      * @param body (optional)
      * @return OK
      */
-    saveFeedback(body: SaveFeedback | undefined): Observable<Message> {
+    saveFeedback(body: SaveFeedbackCommand | undefined): Observable<Message> {
         let url_ = this.baseUrl + "/ChatbotAI/SaveFeedback";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -227,7 +227,7 @@ export class ChatbotAIApiClient {
      * @param body (optional)
      * @return OK
      */
-    cancelResponse(body: CancelResponseDto | undefined): Observable<Message> {
+    cancelResponse(body: CancelResponseCommand | undefined): Observable<Message> {
         let url_ = this.baseUrl + "/ChatbotAI/CancelResponse";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -287,11 +287,11 @@ export class ChatbotAIApiClient {
     }
 }
 
-export class CancelResponseDto implements ICancelResponseDto {
+export class CancelResponseCommand implements ICancelResponseCommand {
     messageId?: number;
     content?: string | undefined;
 
-    constructor(data?: ICancelResponseDto) {
+    constructor(data?: ICancelResponseCommand) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -307,9 +307,9 @@ export class CancelResponseDto implements ICancelResponseDto {
         }
     }
 
-    static fromJS(data: any): CancelResponseDto {
+    static fromJS(data: any): CancelResponseCommand {
         data = typeof data === 'object' ? data : {};
-        let result = new CancelResponseDto();
+        let result = new CancelResponseCommand();
         result.init(data);
         return result;
     }
@@ -322,9 +322,49 @@ export class CancelResponseDto implements ICancelResponseDto {
     }
 }
 
-export interface ICancelResponseDto {
+export interface ICancelResponseCommand {
     messageId?: number;
     content?: string | undefined;
+}
+
+export class GenerateResponseCommand implements IGenerateResponseCommand {
+    content?: string | undefined;
+    date?: Date;
+
+    constructor(data?: IGenerateResponseCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.content = _data["content"];
+            this.date = _data["date"] ? new Date(_data["date"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): GenerateResponseCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new GenerateResponseCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["content"] = this.content;
+        data["date"] = this.date ? this.date.toISOString() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IGenerateResponseCommand {
+    content?: string | undefined;
+    date?: Date;
 }
 
 export class Message implements IMessage {
@@ -447,11 +487,11 @@ export interface IProblemDetails {
     [key: string]: any;
 }
 
-export class SaveFeedback implements ISaveFeedback {
+export class SaveFeedbackCommand implements ISaveFeedbackCommand {
     messageId?: number;
     grade?: number | undefined;
 
-    constructor(data?: ISaveFeedback) {
+    constructor(data?: ISaveFeedbackCommand) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -467,9 +507,9 @@ export class SaveFeedback implements ISaveFeedback {
         }
     }
 
-    static fromJS(data: any): SaveFeedback {
+    static fromJS(data: any): SaveFeedbackCommand {
         data = typeof data === 'object' ? data : {};
-        let result = new SaveFeedback();
+        let result = new SaveFeedbackCommand();
         result.init(data);
         return result;
     }
@@ -482,49 +522,9 @@ export class SaveFeedback implements ISaveFeedback {
     }
 }
 
-export interface ISaveFeedback {
+export interface ISaveFeedbackCommand {
     messageId?: number;
     grade?: number | undefined;
-}
-
-export class UserMessageDto implements IUserMessageDto {
-    content?: string | undefined;
-    date?: Date;
-
-    constructor(data?: IUserMessageDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.content = _data["content"];
-            this.date = _data["date"] ? new Date(_data["date"].toString()) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): UserMessageDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new UserMessageDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["content"] = this.content;
-        data["date"] = this.date ? this.date.toISOString() : <any>undefined;
-        return data;
-    }
-}
-
-export interface IUserMessageDto {
-    content?: string | undefined;
-    date?: Date;
 }
 
 export class SwaggerException extends Error {

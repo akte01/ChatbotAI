@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import {
-  CancelResponseDto,
+  CancelResponseCommand,
   ChatbotAIApiClient,
+  GenerateResponseCommand,
   Message,
-  SaveFeedback,
-  UserMessageDto,
+  SaveFeedbackCommand,
 } from './chatbot-api-client';
 import {
   BehaviorSubject,
@@ -63,7 +63,7 @@ export class ChatbotService {
           return this.apiClient.cancelResponse({
             messageId: lastMessage?.messageId,
             content: lastMessage?.content,
-          } as CancelResponseDto);
+          } as CancelResponseCommand);
         }
         return of(null);
       })
@@ -75,7 +75,7 @@ export class ChatbotService {
     this.finishedTypingSource.next(false);
     const messages = this.messagesSource.getValue();
     const date = new Date();
-    var userMessage = new UserMessageDto({
+    var userMessage = new GenerateResponseCommand({
       content: newMessage,
       date: date,
     });
@@ -99,7 +99,7 @@ export class ChatbotService {
     let index = messages.findIndex((m) => m.messageId === messageId);
     messages[index].grade = grade;
     return this.apiClient
-      .saveFeedback(new SaveFeedback({ messageId: messageId, grade: grade }))
+      .saveFeedback(new SaveFeedbackCommand({ messageId: messageId, grade: grade }))
       .pipe(tap(() => this.messagesSource.next(messages)));
   }
 

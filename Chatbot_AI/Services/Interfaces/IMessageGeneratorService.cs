@@ -4,6 +4,6 @@ namespace Chatbot_AI.Services.Interfaces;
 
 public interface IMessageGeneratorService
 {
-  public Task<string> GenerateResponseUsingAiModelAsync(string userMessageContent);
+  public Task<string> GenerateResponseAsync(string userMessageContent);
 
 }

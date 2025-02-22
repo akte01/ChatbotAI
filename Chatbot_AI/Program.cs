@@ -3,13 +3,15 @@ using Chatbot_AI.Services;
 using Chatbot_AI.Services.Interfaces;
 using NLog.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
+var useAIModel = builder.Configuration.GetValue<bool>("ResponseGenerator:UseAIModel");
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
-        builder => builder.WithOrigins("http://localhost:57651")
+        builder => builder.WithOrigins("http://localhost:59277")
             .AllowAnyHeader()
             .AllowAnyMethod());
 });
@@ -22,8 +24,15 @@ builder.Services.AddLogging(logging =>
 });
 
 // Add services to the container.
-builder.Services.AddScoped<IMessageService, MessageService>();
-builder.Services.AddSingleton<IMessageGeneratorService, MessageGeneratorService>();
+if (useAIModel)
+{
+    builder.Services.AddSingleton<IMessageGeneratorService, AIMessageGeneratorService>();
+}
+else
+{
+    builder.Services.AddSingleton<IMessageGeneratorService, RandomMessageGeneratorService>();
+}
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()));
 
 // Adding db connection
 builder.Services.AddDbContext<ChatbotAIContext>(opt =>
@@ -33,7 +42,6 @@ builder.Services.AddDbContext<ChatbotAIContext>(opt =>
 
 // Add NLog as the logger provider
 builder.Services.AddSingleton<ILoggerProvider, NLogLoggerProvider>();
-// Add services to the container.
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

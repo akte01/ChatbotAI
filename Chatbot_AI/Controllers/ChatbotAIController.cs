@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Chatbot_AI.Models;
-using Chatbot_AI.Services.Interfaces;
-using Chatbot_AI.Models.Dtos;
 using System.Net;
-using Microsoft.AspNetCore.Http;
-using System.Net.Mail;
+using MediatR;
+using Chatbot_AI.Commands;
+using Chatbot_AI.Queries;
 
 namespace Chatbot_AI.Controllers
 {
@@ -13,12 +12,12 @@ namespace Chatbot_AI.Controllers
     public class ChatbotAIController : ControllerBase
     {
         private readonly ILogger<ChatbotAIController> _logger;
-        private readonly IMessageService _messageService;
+        private readonly IMediator _mediator;
 
-        public ChatbotAIController(IMessageService messageService, ILogger<ChatbotAIController> logger)
+        public ChatbotAIController(IMediator mediator, ILogger<ChatbotAIController> logger)
         {
             _logger = logger;
-            _messageService = messageService;
+            _mediator = mediator;
         }
 
         [HttpGet]
@@ -31,7 +30,7 @@ namespace Chatbot_AI.Controllers
             try
             {
                 _logger.LogInformation("Getting chat history...");
-                var results = await _messageService.GetMessagesAsync();
+                var results = await _mediator.Send(new GetMessagesQuery());
                 return results.Any() ? Ok(results) : NoContent();
             }
             catch (Exception e)
@@ -45,12 +44,12 @@ namespace Chatbot_AI.Controllers
         [Route("GenerateResponse")]
         [ProducesResponseType(typeof(Message), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<ActionResult<Message>> GenerateResponse([FromBody] UserMessageDto message)
+        public async Task<ActionResult<Message>> GenerateResponse([FromBody] GenerateResponseCommand command)
         {
             try
             {
                 _logger.LogInformation("Saving user message and generate response...");
-                var result = await _messageService.GenerateResponseAsync(message);
+                var result = await _mediator.Send(command);
                 return Ok(result);
             }
             catch (Exception e)
@@ -65,12 +64,12 @@ namespace Chatbot_AI.Controllers
         [Route("SaveFeedback")]
         [ProducesResponseType(typeof(Message), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<ActionResult<Message>> SaveFeedback([FromBody] SaveFeedback feedback)
+        public async Task<ActionResult<Message>> SaveFeedback([FromBody] SaveFeedbackCommand command)
         {
             try
             {
                 _logger.LogInformation("Saving response feedback...");
-                var result = await _messageService.SaveFeedback(feedback);
+                var result = await _mediator.Send(command);
                 return Ok(result);
             }
             catch (Exception e)
@@ -84,12 +83,12 @@ namespace Chatbot_AI.Controllers
         [Route("CancelResponse")]
         [ProducesResponseType(typeof(Message), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<ActionResult<Message>> CancelResponse([FromBody] CancelResponseDto message)
+        public async Task<ActionResult<Message>> CancelResponse([FromBody] CancelResponseCommand command)
         {
             try
             {
                 _logger.LogInformation("Canceling response...");
-                var result = await _messageService.CancelResponse(message);
+                var result = await _mediator.Send(command);
                 return Ok(result);
             }
             catch (Exception e)
