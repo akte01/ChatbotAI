@@ -35,7 +35,7 @@ import { ChatbotService } from './shared/services/chatbot.service';
     ChatbotAIApiClient,
     {
       provide: ChatbotAIApiBaseUrl,
-      useValue: "https://localhost:7265"
+      useValue: "https://localhost:44338"
     }
   ],
   bootstrap: [AppComponent]

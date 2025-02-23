@@ -10,10 +10,12 @@ var useAIModel = builder.Configuration.GetValue<bool>("ResponseGenerator:UseAIMo
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowSpecificOrigin",
-        builder => builder.WithOrigins("http://localhost:59277")
+    options.AddDefaultPolicy(builder =>
+    {
+        builder.AllowAnyOrigin()
             .AllowAnyHeader()
-            .AllowAnyMethod());
+            .AllowAnyMethod();
+    });
 });
 
 // Configure NLog
@@ -57,7 +59,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors("AllowSpecificOrigin");
+app.UseCors();
 
 app.UseHttpsRedirection();
 
